@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Routes, Route, Link } from 'react-router-dom';
 import MarketMeter from './components/MarketMeter';
 import NewsStory from './components/NewsStory';
+import Archives from './pages/Archives';
+import { FaArchive } from 'react-icons/fa';
 
 const initialStories = [
   {
@@ -46,9 +49,59 @@ const initialStories = [
   }
 ];
 
+const archivedStories = [
+  {
+    company: 'Sony',
+    date: 'Nov 25, 2023',
+    title: 'Spider-Man 2 Breaks Sales Records',
+    description: 'Latest PlayStation exclusive becomes fastest-selling first-party game.',
+    isPositive: true,
+    url: 'https://blog.playstation.com/2023/11/25/spiderman-2-sales-record'
+  },
+  {
+    company: 'Microsoft',
+    date: 'Nov 20, 2023',
+    title: 'Xbox Cloud Gaming Expands to New Markets',
+    description: 'Cloud gaming service now available in 15 additional countries.',
+    isPositive: true,
+    url: 'https://news.xbox.com/en-us/2023/11/20/cloud-gaming-expansion'
+  }
+];
+
+const Dashboard = ({ marketShare, stories }) => (
+  <div className="min-h-screen bg-gray-100 p-6">
+    <div className="max-w-3xl mx-auto">
+      <motion.h1 
+        className="text-4xl font-bold text-gray-800 text-center mb-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        Console Market Share Tracker
+      </motion.h1>
+
+      <MarketMeter shareValue={marketShare} />
+
+      <div className="space-y-4">
+        {stories.map((story, index) => (
+          <NewsStory key={index} story={story} />
+        ))}
+      </div>
+
+      <Link 
+        to="/archives" 
+        className="mt-8 flex items-center justify-center gap-2 p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+      >
+        <FaArchive className="text-gray-600" />
+        <span className="text-gray-600 font-medium">View Archives</span>
+      </Link>
+    </div>
+  </div>
+);
+
 const App = () => {
-  const [marketShare, setMarketShare] = useState(50); // 50% is neutral
+  const [marketShare, setMarketShare] = useState(50);
   const [stories, setStories] = useState(initialStories);
+  const [archived, setArchived] = useState(archivedStories);
 
   const addNewsStory = (story) => {
     const impact = story.isPositive ? 1 : -1;
@@ -59,32 +112,20 @@ const App = () => {
       return newShare;
     });
     
+    // Move the oldest story to archives when adding a new one
+    if (stories.length >= 5) {
+      const oldestStory = stories[stories.length - 1];
+      setArchived(prev => [oldestStory, ...prev]);
+    }
+    
     setStories(prev => [story, ...prev].slice(0, 5));
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-3xl mx-auto">
-        <motion.h1 
-          className="text-4xl font-bold text-gray-800 text-center mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          Console Market Share Tracker
-        </motion.h1>
-
-        <MarketMeter shareValue={marketShare} />
-
-        <div className="space-y-4">
-          {stories.map((story, index) => (
-            <NewsStory 
-              key={index}
-              story={story}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<Dashboard marketShare={marketShare} stories={stories} />} />
+      <Route path="/archives" element={<Archives archivedStories={archived} />} />
+    </Routes>
   );
 };
 

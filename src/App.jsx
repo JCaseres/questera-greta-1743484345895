@@ -8,6 +8,14 @@ import { FaArchive } from 'react-icons/fa';
 
 const initialStories = [
   {
+    company: 'Sony',
+    date: 'March 25, 2025',
+    title: 'Sony Layoffs once again',
+    description: 'PlayStation has once again laid off 500 employees.',
+    isPositive: false,
+    url: 'https://blog.playstation.com/2023/11/25/spiderman-2-sales-record'
+  },
+  {
     company: 'Microsoft',
     date: 'Nov 25, 2025',
     title: 'Xbox releases first official Xbox Handheld',
@@ -38,7 +46,10 @@ const initialStories = [
     description: 'Call of Duty and other major titles now available on Game Pass.',
     isPositive: true,
     url: 'https://news.xbox.com/en-us/2023/12/05/activision-games-on-game-pass'
-  },
+  }
+];
+
+const archivedStories = [
   {
     company: 'Sony',
     date: 'Nov 30, 2023',
@@ -46,10 +57,7 @@ const initialStories = [
     description: 'New tier system shows strong adoption among players.',
     isPositive: true,
     url: 'https://blog.playstation.com/2023/11/30/playstation-plus-revamp'
-  }
-];
-
-const archivedStories = [
+  },
   {
     company: 'Sony',
     date: 'Nov 25, 2023',
@@ -99,7 +107,7 @@ const Dashboard = ({ marketShare, stories }) => (
 );
 
 const App = () => {
-  const [marketShare, setMarketShare] = useState(50);
+  const [marketShare, setMarketShare] = useState(51); // Adjusted for the new negative Sony story
   const [stories, setStories] = useState(initialStories);
   const [archived, setArchived] = useState(archivedStories);
 
@@ -112,7 +120,6 @@ const App = () => {
       return newShare;
     });
     
-    // Move the oldest story to archives when adding a new one
     if (stories.length >= 5) {
       const oldestStory = stories[stories.length - 1];
       setArchived(prev => [oldestStory, ...prev]);
